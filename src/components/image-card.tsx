@@ -3,8 +3,8 @@
 import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { PromptData } from '@/lib/data';
 import { Eye } from 'lucide-react';
+import type { PromptData } from '@/types/prompt'; // ✅ updated type import
 
 interface ImageCardProps {
   prompt: PromptData;

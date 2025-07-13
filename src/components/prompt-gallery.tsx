@@ -1,50 +1,51 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ImageCard from './image-card';
 import Pagination from './pagination';
 import CopyButton from './copy-button';
-import { prompts as allPrompts, type PromptData } from '@/lib/data';
+import type { PromptData } from '@/types/prompt';
 
 const ITEMS_PER_PAGE = 20;
 
 export default function PromptGallery() {
+  const [allPrompts, setAllPrompts] = useState<PromptData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPrompt, setSelectedPrompt] = useState<PromptData | null>(null);
 
+  useEffect(() => {
+    const fetchPrompts = async () => {
+      try {
+        const res = await fetch('/api/prompts/all');
+        const data = await res.json();
+        setAllPrompts(data);
+      } catch (err) {
+        console.error('Failed to fetch prompts:', err);
+      }
+    };
+
+    fetchPrompts();
+  }, []);
+
   const paginatedPrompts = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    return allPrompts.slice(startIndex, endIndex);
-  }, [currentPage]);
+    return allPrompts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [allPrompts, currentPage]);
 
   const totalPages = Math.ceil(allPrompts.length / ITEMS_PER_PAGE);
-
-  const handleViewPrompt = (prompt: PromptData) => {
-    setSelectedPrompt(prompt);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {paginatedPrompts.map((prompt) => (
-          <ImageCard key={prompt.id} prompt={prompt} onView={handleViewPrompt} />
+          <ImageCard key={prompt._id} prompt={prompt} onView={setSelectedPrompt} />
         ))}
       </div>
 
       {totalPages > 1 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       )}
 
       <Dialog open={!!selectedPrompt} onOpenChange={(isOpen) => !isOpen && setSelectedPrompt(null)}>
@@ -55,10 +56,9 @@ export default function PromptGallery() {
                 <Image
                   src={selectedPrompt.imageUrl}
                   alt={selectedPrompt.title}
-                  priority={true}
+                  priority
                   fill
                   className="object-contain rounded-t-lg md:rounded-l-lg md:rounded-t-none"
-                  data-ai-hint={selectedPrompt.aiHint}
                 />
               </div>
               <div className="p-6 flex flex-col">
