@@ -1,4 +1,3 @@
-// src/models/prompt.ts
 import mongoose, { Schema, Document, models, model } from 'mongoose';
 
 export interface PromptDocument extends Document {
@@ -6,6 +5,7 @@ export interface PromptDocument extends Document {
   prompt: string;
   imageUrl: string;
   cloudinaryId: string;
+  category: string; // <-- New field
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,6 +16,7 @@ const PromptSchema = new Schema<PromptDocument>(
     prompt: { type: String, required: true },
     imageUrl: { type: String, required: true },
     cloudinaryId: { type: String, required: true },
+    category: { type: String, required: true }, // <-- Required category
   },
   {
     timestamps: true,

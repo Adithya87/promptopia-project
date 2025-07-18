@@ -4,10 +4,10 @@ import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
-import type { PromptData } from '@/types/prompt'; // ✅ updated type import
+import type { PromptData } from '@/types/prompt'; // ✅ FIXED
 
 interface ImageCardProps {
-  prompt: PromptData;
+  prompt: PromptData; // ✅ FIXED
   onView: (prompt: PromptData) => void;
 }
 
@@ -22,13 +22,21 @@ export default function ImageCard({ prompt, onView }: ImageCardProps) {
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-contain"
-            data-ai-hint={prompt.aiHint}
           />
         </div>
       </CardHeader>
+
       <CardContent className="p-4 flex-grow">
-        <CardTitle className="font-headline text-xl mb-2">{prompt.title}</CardTitle>
+        <CardTitle className="font-headline text-xl mb-1">
+          {prompt.title}
+        </CardTitle>
+        {prompt.category && ( // ✅ Optional chaining safety
+          <span className="inline-block bg-zinc-800 text-white text-xs px-2 py-1 rounded-full mt-1">
+            {prompt.category}
+          </span>
+        )}
       </CardContent>
+
       <CardFooter className="p-4 pt-0">
         <Button
           onClick={() => onView(prompt)}

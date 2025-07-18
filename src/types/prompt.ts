@@ -4,5 +4,6 @@ export type PromptData = {
   prompt: string;
   imageUrl: string;
   cloudinaryId: string;
+  category: string; // ✅ Required for filtering and display
   aiHint?: string;
 };

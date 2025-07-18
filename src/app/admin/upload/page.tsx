@@ -14,6 +14,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { CATEGORIES } from '@/lib/constants/categories';
+import EditPromptModal from '@/components/admin/edit-prompt-modal'; // ✅ modal component
 
 export default function AdminUploadPage() {
   const { isAdmin, logout, isMounted } = useAdminAuth();
@@ -22,10 +24,12 @@ export default function AdminUploadPage() {
 
   const [title, setTitle] = useState('');
   const [promptText, setPromptText] = useState('');
+  const [category, setCategory] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [prompts, setPrompts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [editingPrompt, setEditingPrompt] = useState<any | null>(null); // ✅ modal state
 
   useEffect(() => {
     if (isMounted && !isAdmin) {
@@ -70,6 +74,7 @@ export default function AdminUploadPage() {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('prompt', promptText);
+    formData.append('category', category);
     formData.append('image', imageFile);
 
     try {
@@ -89,9 +94,9 @@ export default function AdminUploadPage() {
         description: 'The new prompt has been added to the gallery.',
       });
 
-      // Reset form
       setTitle('');
       setPromptText('');
+      setCategory('');
       setImageFile(null);
       setImagePreview(null);
       (document.getElementById('image') as HTMLInputElement).value = '';
@@ -196,6 +201,24 @@ export default function AdminUploadPage() {
                 />
               </div>
               <div className="grid gap-2">
+                <Label htmlFor="category">Category</Label>
+                <select
+                  id="category"
+                  aria-label="Category"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  required
+                  className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm"
+                >
+                  <option value="" disabled>Select a category</option>
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid gap-2">
                 <Label htmlFor="image">Image</Label>
                 <Input
                   id="image"
@@ -235,7 +258,7 @@ export default function AdminUploadPage() {
         <Card className="mt-8">
           <CardHeader>
             <CardTitle className="text-2xl">Manage Prompts</CardTitle>
-            <CardDescription>Delete existing prompts from the gallery.</CardDescription>
+            <CardDescription>Delete or edit existing prompts in the gallery.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -243,10 +266,23 @@ export default function AdminUploadPage() {
                 prompts.map((p) => (
                   <div key={p._id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
                     <span className="font-medium text-secondary-foreground truncate pr-4">{p.title}</span>
-                    <Button variant="destructive" size="sm" onClick={() => handleDelete(p._id)}>
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditingPrompt(p)} // ✅ open modal
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDelete(p._id)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 ))
               ) : (
@@ -256,6 +292,20 @@ export default function AdminUploadPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* ✅ Modal UI for editing */}
+      {editingPrompt && (
+        <EditPromptModal
+          prompt={editingPrompt}
+          onClose={() => setEditingPrompt(null)}
+          onUpdated={(updatedPrompt) => {
+            setPrompts((prev) =>
+              prev.map((p) => (p._id === updatedPrompt._id ? updatedPrompt : p))
+            );
+            setEditingPrompt(null);
+          }}
+        />
+      )}
     </div>
   );
 }
