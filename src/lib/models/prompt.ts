@@ -5,7 +5,7 @@ export interface PromptDocument extends Document {
   prompt: string;
   imageUrl: string;
   cloudinaryId: string;
-  category: string; // <-- New field
+  category: string[]; // <-- Now supports multiple categories
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,7 +16,7 @@ const PromptSchema = new Schema<PromptDocument>(
     prompt: { type: String, required: true },
     imageUrl: { type: String, required: true },
     cloudinaryId: { type: String, required: true },
-    category: { type: String, required: true }, // <-- Required category
+    category: { type: [String], required: true }, // <-- Array of strings
   },
   {
     timestamps: true,

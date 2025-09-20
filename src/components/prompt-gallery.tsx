@@ -1,8 +1,14 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { useMobileBackDialogClose } from "@/hooks/use-mobile-back-dialog-close";
 import Image from "next/image";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import ImageCard from "./image-card";
 import Pagination from "./pagination";
 import CopyButton from "./copy-button";
@@ -18,6 +24,11 @@ export default function PromptGallery() {
   const [allPrompts, setAllPrompts] = useState<PromptData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPrompt, setSelectedPrompt] = useState<PromptData | null>(null);
+  // Close dialog handler for mobile back key
+  useMobileBackDialogClose(
+    !!selectedPrompt,
+    useCallback(() => setSelectedPrompt(null), [])
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [isLoading, setIsLoading] = useState(false);
@@ -97,7 +108,9 @@ export default function PromptGallery() {
         {isLoading
           ? "Loading..."
           : allPrompts.length > 0
-          ? `${allPrompts.length} result${allPrompts.length > 1 ? "s" : ""} found`
+          ? `${allPrompts.length} result${
+              allPrompts.length > 1 ? "s" : ""
+            } found`
           : searchQuery || category !== "All"
           ? "No results found"
           : ""}
@@ -108,22 +121,35 @@ export default function PromptGallery() {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {paginatedPrompts.map((prompt) => (
-              <ImageCard key={prompt._id} prompt={prompt} onView={setSelectedPrompt} />
+              <ImageCard
+                key={prompt._id}
+                prompt={prompt}
+                onView={setSelectedPrompt}
+              />
             ))}
           </div>
 
           {totalPages > 1 && (
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           )}
         </>
       ) : (
         !isLoading && (
-          <div className="text-center text-muted-foreground py-12 text-lg">No prompts match your search.</div>
+          <div className="text-center text-muted-foreground py-12 text-lg">
+            No prompts match your search.
+          </div>
         )
       )}
 
       {/* Dialog Prompt View */}
-      <Dialog open={!!selectedPrompt} onOpenChange={(isOpen) => !isOpen && setSelectedPrompt(null)}>
+      <Dialog
+        open={!!selectedPrompt}
+        onOpenChange={(isOpen) => !isOpen && setSelectedPrompt(null)}
+      >
         <DialogContent className="sm:max-w-3xl p-0">
           {selectedPrompt && (
             <div className="grid grid-cols-1 md:grid-cols-2">
@@ -143,10 +169,15 @@ export default function PromptGallery() {
                   </DialogTitle>
                 </DialogHeader>
                 <div className="flex-grow overflow-y-auto pr-2 text-muted-foreground my-4">
-                  <p className="text-sm leading-relaxed">{selectedPrompt.prompt}</p>
+                  <p className="text-sm leading-relaxed">
+                    {selectedPrompt.prompt}
+                  </p>
                 </div>
                 <div className="mt-auto pt-4">
-                  <CopyButton textToCopy={selectedPrompt.prompt} className="w-full" />
+                  <CopyButton
+                    textToCopy={selectedPrompt.prompt}
+                    className="w-full"
+                  />
                 </div>
               </div>
             </div>

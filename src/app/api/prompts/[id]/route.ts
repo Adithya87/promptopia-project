@@ -30,9 +30,18 @@ export async function PUT(
     await connectToDatabase();
 
     const formData = await request.formData();
-    const title = formData.get('title') as string;
-    const promptText = formData.get('prompt') as string;
-    const category = formData.get('category') as string;
+    const updates: any = {};
+
+    const title = formData.get('title');
+    if (title !== null && title !== undefined) updates.title = title.toString();
+
+    const promptText = formData.get('prompt');
+    if (promptText !== null && promptText !== undefined) updates.prompt = promptText.toString();
+
+    // Support multiple categories
+    const rawCategories = formData.getAll('category').map(c => c.toString()).filter(Boolean);
+    if (rawCategories.length > 0) updates.category = rawCategories;
+
     const image = formData.get('image') as File | null;
 
     const existingPrompt = await Prompt.findById(params.id);
@@ -60,15 +69,14 @@ export async function PUT(
       updatedCloudinaryId = uploadResult.public_id;
     }
 
+    if (image && image.size > 0) {
+      updates.image = updatedImageUrl;
+      updates.cloudinaryId = updatedCloudinaryId;
+    }
+
     const updated = await Prompt.findByIdAndUpdate(
       params.id,
-      {
-        title,
-        prompt: promptText,
-        category,
-        image: updatedImageUrl,
-        cloudinaryId: updatedCloudinaryId,
-      },
+      updates,
       { new: true }
     );
 

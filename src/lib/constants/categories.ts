@@ -1,11 +1,12 @@
 export const CATEGORIES = [
+  "Trending",
+  "Men",
+  "Women",
   "Fantasy",
-  "Sci-Fi",
   "Nature",
-  "Architecture",
-  "Abstract",
   "Cinematic",
   "Anime Style",
   "Portrait",
   "Surreal",
+
 ];

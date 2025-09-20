@@ -1,50 +1,49 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowLeft, UploadCloud, Loader2, Trash2 } from 'lucide-react';
-
-import { useAdminAuth } from '@/context/admin-auth-context';
-import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { CATEGORIES } from '@/lib/constants/categories';
-import EditPromptModal from '@/components/admin/edit-prompt-modal'; // ✅ modal component
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, UploadCloud, Loader2 } from "lucide-react";
+import { useAdminAuth } from "@/context/admin-auth-context";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { CATEGORIES } from "@/lib/constants/categories";
 
 export default function AdminUploadPage() {
   const { isAdmin, logout, isMounted } = useAdminAuth();
   const router = useRouter();
   const { toast } = useToast();
-
-  const [title, setTitle] = useState('');
-  const [promptText, setPromptText] = useState('');
-  const [category, setCategory] = useState('');
+  const [title, setTitle] = useState("");
+  const [promptText, setPromptText] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [prompts, setPrompts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [editingPrompt, setEditingPrompt] = useState<any | null>(null); // ✅ modal state
 
-  useEffect(() => {
-    if (isMounted && !isAdmin) {
-      router.push('/admin/login');
-    }
-  }, [isAdmin, isMounted, router]);
-
-  useEffect(() => {
-    if (isAdmin) {
-      fetch('/api/prompts/all')
-        .then(res => res.json())
-        .then(data => setPrompts(data))
-        .catch(err => console.error('Failed to fetch prompts:', err));
-    }
-  }, [isAdmin]);
+  // Redirect if not admin
+  if (isMounted && !isAdmin) {
+    router.push("/admin/login");
+    return null;
+  }
+  if (!isMounted) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-muted-foreground mt-4">Loading...</p>
+      </div>
+    );
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -61,100 +60,51 @@ export default function AdminUploadPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!imageFile) {
       toast({
-        variant: 'destructive',
-        title: 'Image Required',
-        description: 'Please select an image to upload.',
+        variant: "destructive",
+        title: "Image Required",
+        description: "Please select an image to upload.",
       });
       return;
     }
-
     const formData = new FormData();
-    formData.append('title', title);
-    formData.append('prompt', promptText);
-    formData.append('category', category);
-    formData.append('image', imageFile);
-
+    formData.append("title", title);
+    formData.append("prompt", promptText);
+    categories.forEach((cat) => formData.append("category", cat));
+    formData.append("image", imageFile);
     try {
       setLoading(true);
-      const res = await fetch('/api/prompts', {
-        method: 'POST',
+      const res = await fetch("/api/prompts", {
+        method: "POST",
         body: formData,
       });
-
-      if (!res.ok) throw new Error('Upload failed');
-
-      const newPrompt = await res.json();
-      setPrompts(prev => [newPrompt, ...prev]);
-
-      toast({
-        title: 'Upload Successful',
-        description: 'The new prompt has been added to the gallery.',
-      });
-
-      setTitle('');
-      setPromptText('');
-      setCategory('');
+      if (!res.ok) throw new Error("Upload failed");
+      setTitle("");
+      setPromptText("");
+      setCategories([]);
       setImageFile(null);
       setImagePreview(null);
-      (document.getElementById('image') as HTMLInputElement).value = '';
-    } catch (err) {
-      console.error(err);
+      (document.getElementById("image") as HTMLInputElement).value = "";
       toast({
-        variant: 'destructive',
-        title: 'Upload Failed',
-        description: 'An error occurred during upload.',
+        title: "Upload Successful",
+        description: "The new prompt has been added to the gallery.",
+      });
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Upload Failed",
+        description: "An error occurred during upload.",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      const res = await fetch(`/api/prompts/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!res.ok) throw new Error();
-
-      setPrompts(prev => prev.filter(p => p._id !== id));
-
-      toast({
-        title: 'Prompt Deleted',
-        description: 'Prompt removed from the gallery.',
-      });
-    } catch {
-      toast({
-        variant: 'destructive',
-        title: 'Delete Failed',
-      });
-    }
-  };
-
   const handleLogout = () => {
     logout();
-    router.push('/admin/login');
+    router.push("/admin/login");
   };
-
-  if (!isMounted) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-muted-foreground mt-4">Loading...</p>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-        <p className="text-muted-foreground">Redirecting to login...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-8">
@@ -166,15 +116,26 @@ export default function AdminUploadPage() {
               Back to Gallery
             </Link>
           </Button>
-          <Button variant="ghost" onClick={handleLogout}>
-            Logout
-          </Button>
+          <div className="flex gap-2 items-center">
+            <a
+              href="/admin/manage"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline hover:text-primary/80 text-sm font-medium"
+            >
+              Manage Prompts
+            </a>
+            <Button variant="ghost" onClick={handleLogout}>
+              Logout
+            </Button>
+          </div>
         </div>
-
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="text-2xl">Upload New Prompt</CardTitle>
-            <CardDescription>Add a new image prompt to the gallery.</CardDescription>
+            <CardDescription>
+              Add a new image prompt to the gallery.
+            </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="grid gap-6">
@@ -201,22 +162,41 @@ export default function AdminUploadPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="category">Category</Label>
-                <select
-                  id="category"
-                  aria-label="Category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  required
-                  className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm"
-                >
-                  <option value="" disabled>Select a category</option>
+                <Label>Categories</Label>
+                <div className="flex flex-wrap gap-2">
                   {CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
+                    <label
+                      key={cat}
+                      className="flex items-center gap-1 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={categories.includes(cat)}
+                        onChange={(e) => {
+                          setCategories((prev) =>
+                            e.target.checked
+                              ? [...prev, cat]
+                              : prev.filter((c) => c !== cat)
+                          );
+                        }}
+                        id={`cat-${cat}`}
+                        className="accent-primary"
+                      />
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+                          categories.includes(cat)
+                            ? "bg-primary text-primary-foreground"
+                            : "border-input text-foreground"
+                        }`}
+                      >
+                        {cat}
+                      </span>
+                    </label>
                   ))}
-                </select>
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  Select one or more categories.
+                </span>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="image">Image</Label>
@@ -230,7 +210,12 @@ export default function AdminUploadPage() {
                 />
                 {imagePreview && (
                   <div className="mt-4 relative h-64 w-full max-w-sm mx-auto rounded-md overflow-hidden border">
-                    <Image src={imagePreview} alt="Image preview" fill className="object-contain" />
+                    <Image
+                      src={imagePreview}
+                      alt="Image preview"
+                      fill
+                      className="object-contain"
+                    />
                   </div>
                 )}
               </div>
@@ -252,60 +237,7 @@ export default function AdminUploadPage() {
             </CardContent>
           </form>
         </Card>
-
-        <Separator />
-
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle className="text-2xl">Manage Prompts</CardTitle>
-            <CardDescription>Delete or edit existing prompts in the gallery.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {prompts.length > 0 ? (
-                prompts.map((p) => (
-                  <div key={p._id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span className="font-medium text-secondary-foreground truncate pr-4">{p.title}</span>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setEditingPrompt(p)} // ✅ open modal
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(p._id)}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-muted-foreground text-center">No prompts in the gallery yet.</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
       </div>
-
-      {/* ✅ Modal UI for editing */}
-      {editingPrompt && (
-        <EditPromptModal
-          prompt={editingPrompt}
-          onClose={() => setEditingPrompt(null)}
-          onUpdated={(updatedPrompt) => {
-            setPrompts((prev) =>
-              prev.map((p) => (p._id === updatedPrompt._id ? updatedPrompt : p))
-            );
-            setEditingPrompt(null);
-          }}
-        />
-      )}
     </div>
   );
 }

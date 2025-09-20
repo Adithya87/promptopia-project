@@ -1,10 +1,17 @@
 "use client";
 
-import Image from 'next/image';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Eye } from 'lucide-react';
-import type { PromptData } from '@/types/prompt'; // ✅ FIXED
+import Image from "next/image";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Eye } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import type { PromptData } from "@/types/prompt"; // ✅ FIXED
 
 interface ImageCardProps {
   prompt: PromptData; // ✅ FIXED
@@ -30,10 +37,19 @@ export default function ImageCard({ prompt, onView }: ImageCardProps) {
         <CardTitle className="font-headline text-xl mb-1">
           {prompt.title}
         </CardTitle>
-        {prompt.category && ( // ✅ Optional chaining safety
-          <span className="inline-block bg-zinc-800 text-white text-xs px-2 py-1 rounded-full mt-1">
-            {prompt.category}
-          </span>
+        {/* Show categories as badges with gap */}
+        {prompt.category && (
+          <div className="flex flex-wrap gap-2 mt-1">
+            {Array.isArray(prompt.category) ? (
+              prompt.category.map((cat: string) => (
+                <Badge key={cat} variant="secondary">
+                  {cat}
+                </Badge>
+              ))
+            ) : (
+              <Badge variant="secondary">{prompt.category}</Badge>
+            )}
+          </div>
         )}
       </CardContent>
 

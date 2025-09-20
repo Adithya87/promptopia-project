@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,12 +21,20 @@ interface EditPromptModalProps {
   onUpdated: (updated: any) => void;
 }
 
-export default function EditPromptModal({ prompt, onClose, onUpdated }: EditPromptModalProps) {
+export default function EditPromptModal({
+  prompt,
+  onClose,
+  onUpdated,
+}: EditPromptModalProps) {
   const { toast } = useToast();
 
   const [title, setTitle] = useState(prompt.title || "");
   const [promptText, setPromptText] = useState(prompt.prompt || "");
-  const [category, setCategory] = useState(prompt.category || "");
+  const [categories, setCategories] = useState<string[]>(
+    Array.isArray(prompt.category)
+      ? prompt.category
+      : [prompt.category].filter(Boolean)
+  );
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -46,7 +59,7 @@ export default function EditPromptModal({ prompt, onClose, onUpdated }: EditProm
       const formData = new FormData();
       formData.append("title", title);
       formData.append("prompt", promptText);
-      formData.append("category", category);
+      categories.forEach((cat) => formData.append("category", cat));
       if (imageFile) {
         formData.append("image", imageFile);
       }
@@ -59,7 +72,10 @@ export default function EditPromptModal({ prompt, onClose, onUpdated }: EditProm
       if (!res.ok) throw new Error();
 
       const updated = await res.json();
-      toast({ title: "Prompt Updated", description: "Changes saved successfully." });
+      toast({
+        title: "Prompt Updated",
+        description: "Changes saved successfully.",
+      });
       onUpdated(updated);
       onClose();
     } catch (error) {
@@ -103,21 +119,41 @@ export default function EditPromptModal({ prompt, onClose, onUpdated }: EditProm
           </div>
 
           <div>
-            <Label htmlFor="category">Category</Label>
-            <select
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm"
-              required
-            >
-              <option value="" disabled>Select a category</option>
+            <Label>Categories</Label>
+            <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
+                <label
+                  key={cat}
+                  className="flex items-center gap-1 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={categories.includes(cat)}
+                    onChange={(e) => {
+                      setCategories((prev) =>
+                        e.target.checked
+                          ? [...prev, cat]
+                          : prev.filter((c) => c !== cat)
+                      );
+                    }}
+                    id={`cat-edit-${cat}`}
+                    className="accent-primary"
+                  />
+                  <span
+                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+                      categories.includes(cat)
+                        ? "bg-primary text-primary-foreground"
+                        : "border-input text-foreground"
+                    }`}
+                  >
+                    {cat}
+                  </span>
+                </label>
               ))}
-            </select>
+            </div>
+            <span className="text-xs text-muted-foreground">
+              Select one or more categories.
+            </span>
           </div>
 
           <div>
