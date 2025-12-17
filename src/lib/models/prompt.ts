@@ -6,6 +6,8 @@ export interface PromptDocument extends Document {
   imageUrl: string;
   cloudinaryId: string;
   category: string[]; // <-- Now supports multiple categories
+  likes: number;
+  likedBy: string[]; // Array of user IDs who liked
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,6 +19,8 @@ const PromptSchema = new Schema<PromptDocument>(
     imageUrl: { type: String, required: true },
     cloudinaryId: { type: String, required: true },
     category: { type: [String], required: true }, // <-- Array of strings
+    likes: { type: Number, default: 0 },
+    likedBy: { type: [String], default: [] }, // Store user IDs/identifiers
   },
   {
     timestamps: true,

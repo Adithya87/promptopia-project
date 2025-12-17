@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import LikeButton from "./like-button";
 import type { PromptData } from "@/types/prompt"; // ✅ FIXED
 
 interface ImageCardProps {
@@ -53,14 +54,19 @@ export default function ImageCard({ prompt, onView }: ImageCardProps) {
         )}
       </CardContent>
 
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-4 pt-0 flex gap-2">
         <Button
           onClick={() => onView(prompt)}
-          className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+          className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
         >
           <Eye className="mr-2 h-4 w-4" />
           View Prompt
         </Button>
+        <LikeButton
+          promptId={prompt._id}
+          initialLikes={prompt.likes}
+          initialLikedBy={prompt.likedBy}
+        />
       </CardFooter>
     </Card>
   );

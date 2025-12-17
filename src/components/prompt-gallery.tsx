@@ -12,6 +12,8 @@ import {
 import ImageCard from "./image-card";
 import Pagination from "./pagination";
 import CopyButton from "./copy-button";
+import LikeButton from "./like-button";
+import { Badge } from "@/components/ui/badge";
 import type { PromptData } from "@/types/prompt";
 import { CATEGORIES } from "@/lib/constants/categories";
 
@@ -168,15 +170,33 @@ export default function PromptGallery() {
                     {selectedPrompt.title}
                   </DialogTitle>
                 </DialogHeader>
+                {selectedPrompt.category && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {Array.isArray(selectedPrompt.category) ? (
+                      selectedPrompt.category.map((cat: string) => (
+                        <Badge key={cat} variant="secondary">
+                          {cat}
+                        </Badge>
+                      ))
+                    ) : (
+                      <Badge variant="secondary">{selectedPrompt.category}</Badge>
+                    )}
+                  </div>
+                )}
                 <div className="flex-grow overflow-y-auto pr-2 text-muted-foreground my-4">
                   <p className="text-sm leading-relaxed">
                     {selectedPrompt.prompt}
                   </p>
                 </div>
-                <div className="mt-auto pt-4">
+                <div className="mt-auto pt-4 flex gap-2">
                   <CopyButton
                     textToCopy={selectedPrompt.prompt}
-                    className="w-full"
+                    className="flex-1"
+                  />
+                  <LikeButton
+                    promptId={selectedPrompt._id}
+                    initialLikes={selectedPrompt.likes}
+                    initialLikedBy={selectedPrompt.likedBy}
                   />
                 </div>
               </div>

@@ -5,5 +5,7 @@ export type PromptData = {
   imageUrl: string;
   cloudinaryId: string;
   category: string[]; // ✅ Now supports multiple categories
+  likes?: number;
+  likedBy?: string[];
   aiHint?: string;
 };
