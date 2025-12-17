@@ -1,4 +1,9 @@
 // lib/cloudinary.ts
+// This file should ONLY be imported on the server
+if (typeof window !== 'undefined') {
+  throw new Error('Cloudinary module can only be used on the server');
+}
+
 import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({
@@ -26,3 +31,4 @@ export async function uploadImage(buffer: Buffer) {
     stream.end(buffer);
   });
 }
+

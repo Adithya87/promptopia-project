@@ -9,11 +9,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import Link from "next/link";
 import ImageCard from "./image-card";
 import Pagination from "./pagination";
 import CopyButton from "./copy-button";
 import LikeButton from "./like-button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import type { PromptData } from "@/types/prompt";
 import { CATEGORIES } from "@/lib/constants/categories";
 
@@ -76,16 +78,16 @@ export default function PromptGallery() {
   return (
     <>
       {/* Search & Category Filter */}
-      <div className="flex flex-col items-center justify-center mb-8 gap-4 sm:flex-row">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-center mb-8 w-full">
         <input
           type="text"
-          placeholder="Search prompts..."
+          placeholder="🔍 Search prompts..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full sm:w-80 px-4 py-2 rounded-lg bg-zinc-900 text-white placeholder-gray-400 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-primary"
+          className="flex-1 min-w-0 px-4 py-3 rounded-lg bg-white/5 text-white placeholder-gray-400 border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500 backdrop-blur-sm transition-all"
         />
 
-        <div className="w-full sm:w-60 relative">
+        <div className="w-full sm:w-60 flex-shrink-0 relative mb-32 sm:mb-0">
           <label htmlFor="category-select" className="sr-only">
             Filter by category
           </label>
@@ -94,7 +96,7 @@ export default function PromptGallery() {
             aria-label="Filter by category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg bg-zinc-900 text-white border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-purple-600/20 to-pink-600/20 text-white border-2 border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-400 backdrop-blur-sm transition-all hover:border-purple-500 cursor-pointer"
           >
             {categories.map((cat) => (
               <option key={cat} value={cat}>
@@ -106,11 +108,11 @@ export default function PromptGallery() {
       </div>
 
       {/* Results Count */}
-      <p className="text-sm text-gray-400 text-center mb-4">
+      <p className="text-sm text-gray-300 text-center mb-6 font-light">
         {isLoading
-          ? "Loading..."
+          ? "✨ Loading amazing prompts..."
           : allPrompts.length > 0
-          ? `${allPrompts.length} result${
+          ? `🎨 ${allPrompts.length} result${
               allPrompts.length > 1 ? "s" : ""
             } found`
           : searchQuery || category !== "All"
@@ -152,10 +154,10 @@ export default function PromptGallery() {
         open={!!selectedPrompt}
         onOpenChange={(isOpen) => !isOpen && setSelectedPrompt(null)}
       >
-        <DialogContent className="sm:max-w-3xl p-0">
+        <DialogContent className="sm:max-w-3xl p-0 bg-gradient-to-br from-slate-900 to-slate-800 border-white/20">
           {selectedPrompt && (
-            <div className="grid grid-cols-1 md:grid-cols-2">
-              <div className="relative h-96 md:h-auto bg-card">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+              <div className="relative h-96 md:h-auto bg-slate-800">
                 <Image
                   src={selectedPrompt.imageUrl}
                   alt={selectedPrompt.title}
@@ -164,34 +166,56 @@ export default function PromptGallery() {
                   className="object-contain rounded-t-lg md:rounded-l-lg md:rounded-t-none"
                 />
               </div>
-              <div className="p-6 flex flex-col">
+              <div className="p-6 flex flex-col bg-gradient-to-br from-slate-800 to-slate-900">
                 <DialogHeader>
-                  <DialogTitle className="font-headline text-2xl mb-2">
+                  <DialogTitle className="font-headline text-2xl mb-2 text-white">
                     {selectedPrompt.title}
                   </DialogTitle>
                 </DialogHeader>
+                
+                {/* Creator Info - Clickable */}
+                {selectedPrompt.creatorName && (
+                  <Link
+                    href={`/creator/${encodeURIComponent(selectedPrompt.createdBy || "")}`}
+                    className="flex items-center gap-2 mb-4 hover:opacity-80 transition p-3 rounded-lg bg-white/5 hover:bg-white/10"
+                  >
+                    <Avatar className="h-8 w-8 ring-2 ring-purple-500/50">
+                      <AvatarImage src={selectedPrompt.creatorImage} alt={selectedPrompt.creatorName} />
+                      <AvatarFallback className="text-xs bg-gradient-to-br from-purple-500 to-pink-500">
+                        {selectedPrompt.creatorName.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-xs text-gray-400">By</p>
+                      <p className="text-sm text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text font-medium">
+                        {selectedPrompt.creatorName}
+                      </p>
+                    </div>
+                  </Link>
+                )}
+                
                 {selectedPrompt.category && (
                   <div className="flex flex-wrap gap-2 mb-4">
                     {Array.isArray(selectedPrompt.category) ? (
                       selectedPrompt.category.map((cat: string) => (
-                        <Badge key={cat} variant="secondary">
+                        <Badge key={cat} variant="secondary" className="badge-gradient">
                           {cat}
                         </Badge>
                       ))
                     ) : (
-                      <Badge variant="secondary">{selectedPrompt.category}</Badge>
+                      <Badge variant="secondary" className="badge-gradient">{selectedPrompt.category}</Badge>
                     )}
                   </div>
                 )}
-                <div className="flex-grow overflow-y-auto pr-2 text-muted-foreground my-4">
-                  <p className="text-sm leading-relaxed">
+                <div className="flex-grow overflow-y-auto pr-2 text-gray-300 my-4">
+                  <p className="text-sm leading-relaxed font-light">
                     {selectedPrompt.prompt}
                   </p>
                 </div>
                 <div className="mt-auto pt-4 flex gap-2">
                   <CopyButton
                     textToCopy={selectedPrompt.prompt}
-                    className="flex-1"
+                    className="flex-1 gradient-btn"
                   />
                   <LikeButton
                     promptId={selectedPrompt._id}

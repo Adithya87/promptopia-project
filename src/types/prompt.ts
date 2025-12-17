@@ -7,5 +7,8 @@ export type PromptData = {
   category: string[]; // ✅ Now supports multiple categories
   likes?: number;
   likedBy?: string[];
+  createdBy?: string;
+  creatorName?: string;
+  creatorImage?: string;
   aiHint?: string;
 };

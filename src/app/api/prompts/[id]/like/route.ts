@@ -36,13 +36,18 @@ export async function POST(
     }
 
     // Add like
-    prompt.likes = (prompt.likes || 0) + 1;
-    prompt.likedBy.push(userId);
-    await prompt.save();
+    const updatedPrompt = await Prompt.findByIdAndUpdate(
+      id,
+      {
+        $inc: { likes: 1 },
+        $push: { likedBy: userId },
+      },
+      { new: true, runValidators: false }
+    );
 
     return NextResponse.json({
-      likes: prompt.likes,
-      likedBy: prompt.likedBy,
+      likes: updatedPrompt.likes,
+      likedBy: updatedPrompt.likedBy,
     });
   } catch (error) {
     console.error('[LIKE POST ERROR]', error);
@@ -70,6 +75,8 @@ export async function DELETE(
     }
 
     const { id } = await params;
+    
+    // Check if user has already liked (to give proper error message)
     const prompt = await Prompt.findById(id);
     if (!prompt) {
       return NextResponse.json(
@@ -78,23 +85,34 @@ export async function DELETE(
       );
     }
 
-    // Check if user has liked this prompt
-    const likeIndex = prompt.likedBy.indexOf(userId);
-    if (likeIndex === -1) {
+    if (!prompt.likedBy.includes(userId)) {
       return NextResponse.json(
         { error: 'Not liked yet' },
         { status: 400 }
       );
     }
 
+    // Check if other people have also liked - prevent unlike if there are other likes
+    if (prompt.likedBy.length > 1) {
+      return NextResponse.json(
+        { error: 'Cannot unlike when other people have liked this prompt' },
+        { status: 400 }
+      );
+    }
+
     // Remove like
-    prompt.likes = Math.max(0, (prompt.likes || 0) - 1);
-    prompt.likedBy.splice(likeIndex, 1);
-    await prompt.save();
+    const updatedPrompt = await Prompt.findByIdAndUpdate(
+      id,
+      {
+        $inc: { likes: -1 },
+        $pull: { likedBy: userId },
+      },
+      { new: true, runValidators: false }
+    );
 
     return NextResponse.json({
-      likes: prompt.likes,
-      likedBy: prompt.likedBy,
+      likes: Math.max(0, updatedPrompt.likes),
+      likedBy: updatedPrompt.likedBy,
     });
   } catch (error) {
     console.error('[LIKE DELETE ERROR]', error);

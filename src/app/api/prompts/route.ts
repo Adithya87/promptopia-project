@@ -1,12 +1,28 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import { connectToDatabase } from '@/lib/mongodb';
 import Prompt from '@/lib/models/prompt';
+import User from '@/lib/models/user';
 import { uploadImage } from '@/lib/cloudinary';
 
 export async function POST(req: Request) {
   try {
+    // Get session to verify user is authenticated
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     console.log('⏳ Connecting to DB...');
     await connectToDatabase();
+
+    // Get user info
+    const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
 
     const formData = await req.formData();
     const title = formData.get('title')?.toString();
@@ -39,6 +55,9 @@ export async function POST(req: Request) {
       imageUrl: uploadRes.secure_url,
       cloudinaryId: uploadRes.public_id,
       category: categories,
+      createdBy: session.user.email,
+      creatorName: user.name || session.user.email,
+      creatorImage: user.image || '',
     });
 
     console.log('✅ Prompt saved:', newPrompt);

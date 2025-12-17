@@ -3,6 +3,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +19,10 @@ import EditPromptModal from "@/components/admin/edit-prompt-modal";
 
 export default function ManagePromptsPage() {
   const router = useRouter();
+  const handleLogout = () => {
+    // In a real app, this would call your logout function
+    router.push("/admin/login");
+  };
   const [prompts, setPrompts] = useState<any[]>([]);
   const [editingPrompt, setEditingPrompt] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,9 +69,35 @@ export default function ManagePromptsPage() {
   }, [search]);
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-8">
-      <div className="max-w-3xl mx-auto">
-        <Card className="mb-8">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b border-white/10 backdrop-blur-xl bg-black/40 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/">
+            <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Gallery
+            </Button>
+          </Link>
+          <h1 className="text-2xl font-bold gradient-text">Manage Prompts</h1>
+          <div className="flex gap-2 items-center">
+            <a
+              href="/admin/upload"
+              className="text-primary underline hover:text-primary/80 text-sm font-medium"
+            >
+              Upload Prompts
+            </a>
+            <Button variant="ghost" onClick={handleLogout}>
+              Logout
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="p-4 sm:p-8">
+        <div className="max-w-3xl mx-auto">
+          <Card className="mb-8">
           <CardHeader>
             <CardTitle className="text-2xl">Manage Prompts</CardTitle>
             <CardDescription>
@@ -206,6 +238,7 @@ export default function ManagePromptsPage() {
             }}
           />
         )}
+        </div>
       </div>
     </div>
   );

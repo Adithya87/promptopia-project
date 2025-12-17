@@ -1,4 +1,5 @@
 export const CATEGORIES = [
+  "Most Liked",
   "Trending",
   "Men",
   "Women",
@@ -8,5 +9,4 @@ export const CATEGORIES = [
   "Anime Style",
   "Portrait",
   "Surreal",
-
 ];

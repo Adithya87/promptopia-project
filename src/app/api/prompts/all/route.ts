@@ -11,19 +11,23 @@ export async function GET(request: Request) {
     const rawCategory = searchParams.get('category')?.trim() || '';
 
     const query: any = {};
+    let sortOrder: any = { createdAt: -1 };
 
     if (search) {
       query.title = { $regex: search, $options: 'i' };
     }
 
-    if (rawCategory && rawCategory !== 'All') {
+    // Handle "Most Liked" category
+    if (rawCategory === 'Most Liked') {
+      sortOrder = { likes: -1, createdAt: -1 };
+    } else if (rawCategory && rawCategory !== 'All') {
       // Normalize category to Title Case (to match stored format)
       const normalizedCategory =
         rawCategory.charAt(0).toUpperCase() + rawCategory.slice(1).toLowerCase();
       query.category = normalizedCategory;
     }
 
-    const prompts = await Prompt.find(query).sort({ createdAt: -1 });
+    const prompts = await Prompt.find(query).sort(sortOrder);
 
     return NextResponse.json(prompts, { status: 200 });
   } catch (error) {

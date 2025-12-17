@@ -3,78 +3,90 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #4a4a4a 0%, #cbcbcb 25%, #ffffe3 50%, #6d8196 75%, #4a4a4a 100%);
+  min-height: 100vh;
 }
 
 @layer base {
   :root {
-    --background: 234 43% 94%;
-    --foreground: 231 30% 25%;
-    --card: 0 0% 100%;
-    --card-foreground: 231 30% 25%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 231 30% 25%;
-    --primary: 231 48% 48%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 233 33% 90%;
-    --secondary-foreground: 231 30% 25%;
-    --muted: 233 33% 90%;
-    --muted-foreground: 231 20% 55%;
+    --color-dark: #4A4A4A;
+    --color-light-gray: #CBCBCB;
+    --color-cream: #FFFFE3;
+    --color-blue: #6D8196;
+    
+    --background: 0 0% 5%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 12%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 206 100% 50%;
+    --primary-foreground: 0 0% 5%;
+    --secondary: 331 81% 36%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 10% 25%;
+    --muted-foreground: 0 0% 70%;
     --accent: 45 100% 51%;
     --accent-foreground: 0 0% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 232 25% 88%;
-    --input: 232 25% 88%;
-    --ring: 231 48% 48%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    --border: 240 10% 20%;
+    --input: 240 10% 18%;
+    --ring: 206 100% 50%;
+    --chart-1: 206 100% 50%;
+    --chart-2: 331 81% 36%;
+    --chart-3: 45 100% 51%;
+    --chart-4: 200 100% 50%;
+    --chart-5: 340 100% 55%;
+    --radius: 0.75rem;
+    --sidebar-background: 240 10% 10%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 206 100% 50%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 240 10% 20%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 10% 18%;
+    --sidebar-ring: 206 100% 50%;
   }
   .dark {
-    --background: 232 28% 14%;
-    --foreground: 234 43% 94%;
-    --card: 231 28% 17%;
-    --card-foreground: 234 43% 94%;
-    --popover: 231 28% 17%;
-    --popover-foreground: 234 43% 94%;
-    --primary: 234 43% 94%;
-    --primary-foreground: 232 28% 14%;
-    --secondary: 232 28% 20%;
-    --secondary-foreground: 234 43% 94%;
-    --muted: 232 28% 20%;
-    --muted-foreground: 234 20% 65%;
+    --color-dark: #4A4A4A;
+    --color-light-gray: #CBCBCB;
+    --color-cream: #FFFFE3;
+    --color-blue: #6D8196;
+    
+    --background: 0 0% 5%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 12%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 206 100% 50%;
+    --primary-foreground: 0 0% 5%;
+    --secondary: 331 81% 36%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 10% 25%;
+    --muted-foreground: 0 0% 70%;
     --accent: 45 100% 51%;
     --accent-foreground: 0 0% 10%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 231 28% 24%;
-    --input: 231 28% 24%;
-    --ring: 234 43% 94%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 240 10% 20%;
+    --input: 240 10% 18%;
+    --ring: 206 100% 50%;
+    --chart-1: 206 100% 50%;
+    --chart-2: 331 81% 36%;
+    --chart-3: 45 100% 51%;
+    --chart-4: 200 100% 50%;
+    --chart-5: 340 100% 55%;
+    --sidebar-background: 240 10% 10%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 206 100% 50%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 10% 20%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 10% 18%;
+    --sidebar-ring: 206 100% 50%;
   }
 }
 
@@ -85,4 +97,82 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Efficient Utility Classes */
+@layer components {
+  .glass {
+    @apply backdrop-blur-md bg-white/10 border border-white/20 rounded-xl;
+  }
+  
+  .glass-dark {
+    @apply backdrop-blur-md bg-black/30 border border-white/10 rounded-xl;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-purple-400 via-pink-400 to-purple-500 bg-clip-text text-transparent;
+  }
+  
+  .gradient-btn {
+    @apply bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white transition-all duration-300;
+  }
+  
+  .gradient-btn-secondary {
+    @apply bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white transition-all duration-300;
+  }
+  
+  .btn-yellow {
+    @apply bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black transition-all duration-300 font-semibold;
+  }
+  
+  .hover-lift {
+    @apply transition-all duration-300 hover:shadow-2xl hover:-translate-y-1;
+  }
+  
+  .card-gradient {
+    @apply bg-gradient-to-br from-slate-800 to-slate-900 border-white/10;
+  }
+  
+  .badge-gradient {
+    @apply bg-purple-500/20 text-purple-200;
+  }
+  
+  .text-muted {
+    @apply text-gray-400;
+  }
+  
+  .text-primary-light {
+    @apply text-gray-300;
+  }
+}
+
+/* Improve select dropdown visibility */
+select {
+  color-scheme: dark;
+}
+
+select option {
+  background-color: #1f2937;
+  color: #ffffff;
+  padding: 8px;
+  margin: 2px 0;
+}
+
+select option:hover {
+  background-color: #6b21a8;
+}
+
+select option:checked {
+  background: linear-gradient(to right, #6b21a8, #9f1239);
+  color: #ffffff;
+}
+
+/* Force select dropdown to appear below */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 1.25rem;
+  padding-right: 2.5rem;
 }

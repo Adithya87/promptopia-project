@@ -8,6 +8,9 @@ export interface PromptDocument extends Document {
   category: string[]; // <-- Now supports multiple categories
   likes: number;
   likedBy: string[]; // Array of user IDs who liked
+  createdBy: string; // Email of the creator
+  creatorName: string; // Name of the creator
+  creatorImage?: string; // Creator's profile image
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,6 +24,9 @@ const PromptSchema = new Schema<PromptDocument>(
     category: { type: [String], required: true }, // <-- Array of strings
     likes: { type: Number, default: 0 },
     likedBy: { type: [String], default: [] }, // Store user IDs/identifiers
+    createdBy: { type: String, required: true }, // Email of creator
+    creatorName: { type: String, required: true }, // Creator's name
+    creatorImage: { type: String, default: '' }, // Creator's profile image
   },
   {
     timestamps: true,
