@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { dbConnect } from "@/lib/mongodb";
+import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/lib/models/user";
 import Prompt from "@/lib/models/prompt";
 import { authOptions } from "@/lib/auth";
@@ -23,7 +23,7 @@ export async function PUT(
     const userId = params.id;
     const { name, bio } = await req.json();
 
-    await dbConnect();
+    await connectToDatabase();
 
     // Update user profile
     const updatedUser = await User.findByIdAndUpdate(
@@ -66,7 +66,7 @@ export async function DELETE(
 
     const userId = params.id;
 
-    await dbConnect();
+    await connectToDatabase();
 
     // Delete user and their prompts
     await User.findByIdAndDelete(userId);
