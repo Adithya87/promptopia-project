@@ -11,19 +11,19 @@ async function AuthButtons() {
   const session = await getServerSession(authOptions);
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-2 sm:gap-4">
       {session?.user ? (
         <>
           <Link href="/user/upload">
-            <Button className="bg-accent hover:bg-accent/90">
-              <UploadCloud className="mr-2 h-4 w-4" />
-              Upload Prompt
+            <Button className="bg-accent hover:bg-accent/90 px-3 sm:px-4">
+              <UploadCloud className="mr-0 sm:mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Upload Prompt</span>
             </Button>
           </Link>
           <Link href="/user/profile">
-            <Button variant="outline" className="border-zinc-600 text-gray-300 hover:bg-zinc-800">
-              <User className="mr-2 h-4 w-4" />
-              Profile
+            <Button variant="outline" className="border-zinc-600 text-gray-300 hover:bg-zinc-800 px-3 sm:px-4">
+              <User className="mr-0 sm:mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Profile</span>
             </Button>
           </Link>
         </>
@@ -49,12 +49,12 @@ export default function Home() {
 
       {/* Header with Title and Auth Buttons */}
       <div className="border-b border-white/10 backdrop-blur-xl bg-black/40">
-        <div className="container mx-auto px-4 py-6 flex items-center justify-between">
-          <div className="flex-1" />
-          <h1 className="font-headline text-5xl font-black flex-1 text-center gradient-text">
+        <div className="container mx-auto px-4 py-4 sm:py-6 grid grid-cols-1 sm:grid-cols-3 items-center gap-4 sm:gap-0">
+          <div className="hidden sm:block" />
+          <h1 className="font-headline text-3xl sm:text-5xl font-black text-center gradient-text">
             Promptopia
           </h1>
-          <div className="flex-1 flex justify-end">
+          <div className="flex justify-center sm:justify-end">
             <AuthButtons />
           </div>
         </div>

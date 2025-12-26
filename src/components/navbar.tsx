@@ -19,14 +19,15 @@ export default function Navbar() {
     <nav className="border-b border-zinc-800 bg-zinc-900/50 sticky top-0 z-50 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         {/* Right Side */}
-        <div className="flex items-center gap-4 ml-auto">
+        <div className="flex items-center gap-2 sm:gap-4 ml-auto">
           {status === "authenticated" && session?.user ? (
             <>
               {/* Upload Button */}
+              {/* Upload Button */}
               <Link href="/user/upload">
-                <Button className="bg-accent hover:bg-accent/90">
-                  <UploadCloud className="mr-2 h-4 w-4" />
-                  Upload Prompt
+                <Button className="bg-accent hover:bg-accent/90 px-3 sm:px-4">
+                  <UploadCloud className="mr-0 sm:mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">Upload Prompt</span>
                 </Button>
               </Link>
 
